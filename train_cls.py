@@ -2,25 +2,13 @@
 # -*- encoding: utf-8 -*-
 __author__ = 'jxliu.nlper@gmail.com'
 """
-    标记文件
+    训练NER模型
 """
-import codecs
 import yaml
 import pickle
-import tensorflow as tf
-import numpy as np
-import pdb
 from load_data import load_vocs, init_data
-from model import SequenceLabelingModel
-from sklearn.metrics import accuracy_score, precision_score, recall_score
+from model import ClassficationModel
 
-def get_labels(labels):
-    res = []
-    for label in labels:
-        tmp = np.array(label)
-        unique, counts = np.unique(tmp, return_counts=True)
-        res.append(unique[0])
-    return np.array(res)
 
 def main():
     # 加载配置文件
@@ -51,6 +39,7 @@ def main():
     else:
         conv_filter_len_list = None
         conv_filter_size_list = None
+
     # 加载数据
 
     # 加载vocs
@@ -62,23 +51,26 @@ def main():
     path_vocs.append(config['data_params']['voc_params']['label']['path'])
     vocs = load_vocs(path_vocs)
 
-    # 加载数据
+    # 加载训练数据
     sep_str = config['data_params']['sep']
     assert sep_str in ['table', 'space']
     sep = '\t' if sep_str == 'table' else ' '
     max_len = config['model_params']['sequence_length']
     word_len = config['model_params']['word_length']
     data_dict = init_data(
-        path=config['data_params']['path_test'], feature_names=feature_names, sep=sep,
+        path=config['data_params']['path_train'], feature_names=feature_names, sep=sep,
         vocs=vocs, max_len=max_len, model='train', use_char_feature=use_char_feature,
         word_len=word_len)
 
-    # 加载模型
-    model = SequenceLabelingModel(
+    data_dict['label'] = data_dict['label'][:,0:1] - 1
+
+    # 训练模型
+    model = ClassficationModel(
         sequence_length=config['model_params']['sequence_length'],
         nb_classes=config['model_params']['nb_classes'],
         nb_hidden=config['model_params']['bilstm_params']['num_units'],
         num_layers=config['model_params']['bilstm_params']['num_layers'],
+        rnn_dropout=config['model_params']['bilstm_params']['rnn_dropout'],
         feature_weight_shape_dict=feature_weight_shape_dict,
         feature_init_weight_dict=feature_init_weight_dict,
         feature_weight_dropout_dict=feature_weight_dropout_dict,
@@ -90,41 +82,16 @@ def main():
         l2_rate=config['model_params']['l2_rate'],
         rnn_unit=config['model_params']['rnn_unit'],
         learning_rate=config['model_params']['learning_rate'],
+        clip=config['model_params']['clip'],
         use_char_feature=use_char_feature,
         conv_filter_size_list=conv_filter_size_list,
         conv_filter_len_list=conv_filter_len_list,
+        cnn_dropout_rate=config['model_params']['conv_dropout'],
         word_length=word_len,
         path_model=config['model_params']['path_model'])
-    saver = tf.train.Saver()
-    saver.restore(model.sess, config['model_params']['path_model'])
 
-    # 标记
-    viterbi_sequences = model.predict(data_dict)
-
-    label = data_dict['label'][:,0].transpose() - 1
-    predict = get_labels(viterbi_sequences) - 1
-    print('Accuracy is {}'.format(accuracy_score(label, predict)))
-    print('Precision is {}'.format(precision_score(label, predict, average='macro')))
-    print('Recall is {}'.format(recall_score(label, predict, average='macro')))
-
-    # 写入文件
-    label_voc = dict()
-    for key in vocs[-1]:
-        label_voc[vocs[-1][key]] = key
-    with codecs.open(config['data_params']['path_test'], 'r', encoding='utf-8') as file_r:
-        sentences = file_r.read().strip().split('\n\n')
-    file_result = codecs.open(
-        config['data_params']['path_result'], 'w', encoding='utf-8')
-    for i, sentence in enumerate(sentences):
-        for j, item in enumerate(sentence.split('\n')):
-            if j < len(viterbi_sequences[i]):
-                file_result.write('%s\t%s\n' % (item, label_voc[viterbi_sequences[i][j]]))
-            else:
-                file_result.write('%s\tO\n' % item)
-        file_result.write('\n')
-
-    file_result.close()
-
+    model.fit(
+        data_dict=data_dict, dev_size=config['model_params']['dev_size'])
 
 if __name__ == '__main__':
     main()

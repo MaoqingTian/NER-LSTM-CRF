@@ -11,16 +11,8 @@ import tensorflow as tf
 import numpy as np
 import pdb
 from load_data import load_vocs, init_data
-from model import SequenceLabelingModel
+from model import ClassficationModel
 from sklearn.metrics import accuracy_score, precision_score, recall_score
-
-def get_labels(labels):
-    res = []
-    for label in labels:
-        tmp = np.array(label)
-        unique, counts = np.unique(tmp, return_counts=True)
-        res.append(unique[0])
-    return np.array(res)
 
 def main():
     # 加载配置文件
@@ -74,7 +66,7 @@ def main():
         word_len=word_len)
 
     # 加载模型
-    model = SequenceLabelingModel(
+    model = ClassficationModel(
         sequence_length=config['model_params']['sequence_length'],
         nb_classes=config['model_params']['nb_classes'],
         nb_hidden=config['model_params']['bilstm_params']['num_units'],
@@ -100,9 +92,8 @@ def main():
 
     # 标记
     viterbi_sequences = model.predict(data_dict)
-
     label = data_dict['label'][:,0].transpose() - 1
-    predict = get_labels(viterbi_sequences) - 1
+    predict = np.array(viterbi_sequences)
     print('Accuracy is {}'.format(accuracy_score(label, predict)))
     print('Precision is {}'.format(precision_score(label, predict, average='macro')))
     print('Recall is {}'.format(recall_score(label, predict, average='macro')))
@@ -118,7 +109,7 @@ def main():
     for i, sentence in enumerate(sentences):
         for j, item in enumerate(sentence.split('\n')):
             if j < len(viterbi_sequences[i]):
-                file_result.write('%s\t%s\n' % (item, label_voc[viterbi_sequences[i][j]]))
+                file_result.write('%s\t%s\n' % (item, label_voc[viterbi_sequences[i][0]+1]))
             else:
                 file_result.write('%s\tO\n' % item)
         file_result.write('\n')

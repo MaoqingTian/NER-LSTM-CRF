@@ -1,7 +1,7 @@
 data_params:
-  path_result: ./data/test.ner.txt.result
-  path_test: ./data/test.ner.txt
-  path_train: ./data/train.ner.txt
+  path_result: ./data/test/testBase.txt.result
+  path_test: ./data/test/testBase.txt
+  path_train: ./data/train/trainBase.txt
   sep: table
   voc_params:
     char: {min_count: 0, path: ./Res/voc/char.voc.pkl}
@@ -11,8 +11,11 @@ data_params:
 model: NER
 model_params:
   batch_size: 64
-  bilstm_params: {num_layers: 1, num_units: 256, rnn_dropout: 0.2}
+  bilstm_params: {num_layers: 1, num_units: 256, rnn_dropout: 0.5}
   clip: 10
+  conv_dropout: 0.2
+  conv_filter_len_list: [1, 2, 3, 4, 5]
+  conv_filter_size_list: [8, 8, 8, 8, 8]
   dev_size: 0.1
   dropout_rate: 0.5
   embed_params:
@@ -25,7 +28,7 @@ model_params:
       dropout_rate: 0.3
       path: ./Res/embed/char_embed.pkl
       path_pre_train: ./data/embedding.txt
-      shape: [8818, 64]
+      shape: [1057, 64]
     f2:
       dropout_rate: 0.3
       path: null
@@ -34,17 +37,14 @@ model_params:
   feature_names: [f1]
   l2_rate: 0.001
   learning_rate: 0.002
-  max_patience: 5
-  nb_classes: 6
+  max_patience: 10
+  nb_classes: 8
   nb_epoch: 200
   path_model: ./Model/best_model
   rnn_unit: lstm
   sequence_len_pt: 98
-  sequence_length: 55
+  sequence_length: 19
   use_char_feature: false
-  conv_filter_size_list: [8, 8, 8, 8, 8]
-  conv_filter_len_list: [1, 2, 3, 4, 5]
-  conv_dropout: 0.2
   use_crf: true
   word_len_pt: 95
   word_length: 11
