@@ -62,6 +62,7 @@ def main():
         vocs=vocs, max_len=max_len, model='train', use_char_feature=use_char_feature,
         word_len=word_len)
 
+
     # 训练模型
     model = SequenceLabelingModel(
         sequence_length=config['model_params']['sequence_length'],
@@ -88,6 +89,7 @@ def main():
         word_length=word_len,
         path_model=config['model_params']['path_model'])
 
+    print (data_dict)
     model.fit(
         data_dict=data_dict, dev_size=config['model_params']['dev_size'])
 

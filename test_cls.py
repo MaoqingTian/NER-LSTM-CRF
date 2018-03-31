@@ -43,7 +43,6 @@ def main():
     else:
         conv_filter_len_list = None
         conv_filter_size_list = None
-    # 加载数据
 
     # 加载vocs
     path_vocs = []
@@ -64,7 +63,8 @@ def main():
         path=config['data_params']['path_test'], feature_names=feature_names, sep=sep,
         vocs=vocs, max_len=max_len, model='train', use_char_feature=use_char_feature,
         word_len=word_len)
-
+    print (vocs)
+    print (data_dict)
     # 加载模型
     model = ClassficationModel(
         sequence_length=config['model_params']['sequence_length'],

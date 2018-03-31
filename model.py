@@ -131,7 +131,7 @@ class SequenceLabelingModel(object):
           rnn_unit: str, lstm or gru
           learning_rate: float, default is 0.001
           clip: None or float, gradients clip
-          
+
           use_char_feature: bool,是否使用字符特征
           word_length: int, 单词长度
         """
@@ -478,7 +478,7 @@ class SequenceLabelingModel(object):
         Return:
             pass
         """
-        print('predicting...')
+        #print('predicting...')
         data_count = data_test_dict[self._feature_names[0]].shape[0]
         nb_test = int(math.ceil(data_count / float(self._batch_size)))
         viterbi_sequences = []  # 标记结果
@@ -918,7 +918,7 @@ class ClassficationModel(object):
         Return:
             pass
         """
-        print('predicting...')
+        #print('predicting...')
         data_count = data_test_dict[self._feature_names[0]].shape[0]
         nb_test = int(math.ceil(data_count / float(self._batch_size)))
         viterbi_sequences = []  # 标记结果
@@ -949,7 +949,7 @@ class ClassficationModel(object):
                 viterbi_sequence, _ = tf.contrib.crf.viterbi_decode(
                     logit_actual, transition_params)
                 viterbi_sequences.append(viterbi_sequence)
-        print('共标记句子数: %d' % data_count)
+        #print('共标记句子数: %d' % data_count)
         return viterbi_sequences
 
     def compute_loss(self):

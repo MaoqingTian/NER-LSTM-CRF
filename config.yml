@@ -37,7 +37,7 @@ model_params:
   feature_names: [f1]
   l2_rate: 0.001
   learning_rate: 0.002
-  max_patience: 10
+  max_patience: 5
   nb_classes: 8
   nb_epoch: 200
   path_model: ./Model/best_model

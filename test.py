@@ -101,11 +101,11 @@ def main():
     # 标记
     viterbi_sequences = model.predict(data_dict)
 
-    label = data_dict['label'][:,0].transpose() - 1
-    predict = get_labels(viterbi_sequences) - 1
-    print('Accuracy is {}'.format(accuracy_score(label, predict)))
-    print('Precision is {}'.format(precision_score(label, predict, average='macro')))
-    print('Recall is {}'.format(recall_score(label, predict, average='macro')))
+    #label = data_dict['label'][:,0].transpose() - 1
+    #predict = get_labels(viterbi_sequences) - 1
+    #print('Accuracy is {}'.format(accuracy_score(label, predict)))
+    #print('Precision is {}'.format(precision_score(label, predict, average='macro')))
+    #print('Recall is {}'.format(recall_score(label, predict, average='macro')))
 
     # 写入文件
     label_voc = dict()
