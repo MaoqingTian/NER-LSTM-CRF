@@ -482,7 +482,7 @@ class SequenceLabelingModel(object):
         data_count = data_test_dict[self._feature_names[0]].shape[0]
         nb_test = int(math.ceil(data_count / float(self._batch_size)))
         viterbi_sequences = []  # 标记结果
-        for i in tqdm(range(nb_test)):
+        for i in range(nb_test):
             feed_dict = dict()
             batch_indices = np.arange(i * self._batch_size, (i + 1) * self._batch_size) \
                 if (i+1)*self._batch_size <= data_count else \
@@ -922,7 +922,7 @@ class ClassficationModel(object):
         data_count = data_test_dict[self._feature_names[0]].shape[0]
         nb_test = int(math.ceil(data_count / float(self._batch_size)))
         viterbi_sequences = []  # 标记结果
-        for i in tqdm(range(nb_test)):
+        for i in range(nb_test):
             feed_dict = dict()
             batch_indices = np.arange(i * self._batch_size, (i + 1) * self._batch_size) \
                 if (i + 1) * self._batch_size <= data_count else \
